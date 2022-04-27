@@ -1,0 +1,60 @@
+package com.comtroller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.entity.Cart;
+import com.entity.Item;
+import com.entity.Medicine;
+import com.service.CartService;
+
+@RestController
+public class CartController {
+	
+	@Autowired
+	CartService cartService;
+
+	@PostMapping("/addCart")
+	public Cart addcart(@RequestBody Cart cart) {
+		return cartService.addCart(cart);
+	}
+	
+	@GetMapping("/findbyCartId/{id}")
+	public Cart findById(@PathVariable ("id") long id) {
+		return cartService.viewCart(id);	
+	}
+	
+	@PutMapping("/updateCart/{id}")
+		public String updateCartById(@RequestBody Item item, @PathVariable ("id") long id ) {
+		 long orderedQuantity = item.getQuantity();
+		 String name = item.getName();
+		 
+		String url1 = "http://localhost:8085/findByName/";
+		RestTemplate rt = new RestTemplate();
+		Medicine medicine = rt.getForObject(url1+name, Medicine.class);
+		
+		long availableQuantity = medicine.getAvailableQuantity();
+		
+		if(availableQuantity>orderedQuantity) {
+			Cart cart = cartService.updateItem(item, id);
+			return "item updated";
+		}else {
+			return "Please check the quantity";
+		}
+	
+	}
+	
+	@DeleteMapping("/deleteCart/{id}")
+	public String deletecart(@PathVariable ("id") long id) {
+		return cartService.deleteCart(id);
+	}
+
+}

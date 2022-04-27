@@ -1,0 +1,31 @@
+package com.comtroller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.entity.Cart;
+import com.service.CartService;
+import com.service.CustomerCartService;
+
+@RestController
+public class CartController {
+	
+	@Autowired
+	CartService cartService;
+	@Autowired
+	CustomerCartService custCartService;
+	
+	@CrossOrigin(origins = "http://localhost:4200")
+	@PostMapping("/addCart/{name}/{brand}/{Quantity}/{price}/{availableQuantity}/{customerId}")
+	public Cart addUser(@PathVariable ("name") String name, @PathVariable ("brand") String brand,
+			@PathVariable ("Quantity") long Quantity, @PathVariable ("price") double price,
+			@PathVariable ("availableQuantity") long availableQuantity) {
+		
+		
+		return cartService.addCart(name, brand, Quantity, price, availableQuantity);
+	}
+
+}
